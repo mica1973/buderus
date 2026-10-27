@@ -143,11 +143,66 @@ function decorateButtons(main) {
 }
 
 /**
+ * Cleans simple artifacts found in the migrated DA page and recovers a flattened metadata block.
+ * @param {Element} main The main container
+ */
+function normalizeImportedContent(main) {
+  // Empty sections may be emitted when authoring content has redundant section separators.
+  [...main.children].forEach((section) => {
+    if (!section.textContent.trim() && !section.querySelector('img, iframe, video, svg')) section.remove();
+  });
+
+  // DA may flatten a page-metadata block into key/value paragraphs on import.
+  const lastSection = main.lastElementChild;
+  if (lastSection && !lastSection.querySelector('.metadata')) {
+    const fields = [...lastSection.children]
+      .filter((child) => child.tagName === 'P')
+      .map((paragraph) => paragraph.textContent.trim());
+    const values = {};
+    for (let index = 0; index + 1 < fields.length; index += 2) {
+      const key = fields[index].toLowerCase();
+      const value = fields[index + 1];
+      if (key && value) values[key] = value;
+    }
+    if (values.title && values.description) {
+      document.title = values.title;
+      const upsertMeta = (attribute, key, value) => {
+        if (!value) return;
+        let meta = document.head.querySelector(`meta[${attribute}="${key}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute(attribute, key);
+          document.head.append(meta);
+        }
+        meta.content = value;
+      };
+      upsertMeta('name', 'title', values.title);
+      upsertMeta('name', 'description', values.description);
+      upsertMeta('property', 'og:title', values['og:title'] || values.title);
+      upsertMeta('property', 'og:description', values['og:description'] || values.description);
+      upsertMeta('property', 'og:image', values.image || values['og:image']);
+      lastSection.remove();
+    }
+  }
+
+  // Escaped citation tags from the source should not be shown as literal text.
+  main.querySelectorAll('p').forEach((paragraph) => {
+    const text = paragraph.textContent.trim();
+    const normalized = text.replace(/^<cite>\s*/i, '').replace(/\s*<\/cite>$/i, '');
+    if (normalized !== text) {
+      paragraph.textContent = normalized;
+      paragraph.classList.add('quote-attribution');
+    }
+  });
+}
+
+/**
  * Decorates the main element.
  * @param {Element} main The main element
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  normalizeImportedContent(main);
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
@@ -160,7 +215,7 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = 'de-DE';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
@@ -197,6 +252,7 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+  await import('./brand-concierge.js');
 }
 
 /**

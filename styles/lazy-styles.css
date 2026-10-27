@@ -1,1 +1,154 @@
 /* add global styles that can be loaded post LCP here */
+
+#brand-concierge-root {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 1000;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  width: 60px;
+  height: 60px;
+  align-items: flex-end;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+#brand-concierge-root > * {
+  pointer-events: auto;
+}
+
+#brand-concierge-root.is-open {
+  width: min(420px, calc(100vw - 32px));
+  height: min(640px, calc(100dvh - 96px));
+}
+
+#brand-concierge-launcher {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 60px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: #10376a;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 28%);
+  color: #fff;
+  cursor: pointer;
+}
+
+#brand-concierge-launcher:hover,
+#brand-concierge-launcher:focus-visible {
+  background: #e67800;
+  color: #111;
+}
+
+#brand-concierge-launcher:focus-visible {
+  outline: 3px solid #ee7203;
+  outline-offset: 3px;
+}
+
+#brand-concierge-launcher svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+#brand-concierge-root.is-open #brand-concierge-launcher {
+  display: none;
+}
+
+#brand-concierge-panel,
+#brand-concierge-panel[hidden] {
+  display: none;
+}
+
+#brand-concierge-root.is-open #brand-concierge-panel {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #262626;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
+}
+
+#brand-concierge-mount {
+  width: 100%;
+  height: 100%;
+}
+
+#brand-concierge-close {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  padding: 0;
+  background: rgb(0 0 0 / 65%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+#brand-concierge-close:focus-visible {
+  outline: 3px solid #ee7203;
+  outline-offset: 3px;
+}
+
+#brand-concierge-mount [class~='bc-card__image'] {
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+}
+
+.brand-concierge-error {
+  margin: 0;
+  padding: 24px;
+  color: #fff;
+}
+
+.brand-concierge-pending {
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  margin: 0;
+  padding: 32px;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (width < 600px) {
+  #brand-concierge-root {
+    right: 12px;
+    bottom: 12px;
+    width: 56px;
+    height: 56px;
+  }
+
+  #brand-concierge-launcher {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+  }
+
+  #brand-concierge-root.is-open {
+    width: calc(100vw - 24px);
+    height: min(680px, calc(100dvh - 72px));
+  }
+}
